@@ -8,6 +8,21 @@ public class Node : IHeapItem<Node>
 	public Vector3 worldPosition;
 	public int gridX;
 	public int gridY;
+	public int movementPenalty;
+
+    public int gCost;
+	public int hCost;
+	public Node parent;
+	int heapIndex;
+
+	public Node(bool _walkable, Vector3 _worldPosition, int gridX, int gridY, int _penalty)
+	{
+		walkable = _walkable;
+		worldPosition = _worldPosition;
+		this.gridX = gridX;
+		this.gridY = gridY;
+		this.movementPenalty = _penalty;
+	}
 
 	public int fCost
 	{
@@ -15,18 +30,6 @@ public class Node : IHeapItem<Node>
 		{
 			return gCost + hCost;
 		}
-	}
-	public int gCost;
-	public int hCost;
-	public Node parent;
-	int heapIndex;
-
-	public Node(bool _walkable, Vector3 _worldPosition, int gridX, int gridY)
-	{
-		walkable = _walkable;
-		worldPosition = _worldPosition;
-		this.gridX = gridX;
-		this.gridY = gridY;
 	}
 
 	public int HeapIndex
