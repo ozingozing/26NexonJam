@@ -9,6 +9,14 @@ public class GameManager : MonoBehaviour
 	[Header("Game State")]
 	public GameState currentState = GameState.Ready;
 
+	[Header("BGM")]
+	[SerializeField] private AudioSource bgmAudioSource;
+	[SerializeField] private AudioClip bgmClip;
+	[SerializeField] private RectTransform cdIcon;
+	[SerializeField] private float cdRotateSpeed = 180f;
+	[SerializeField] private bool playBgmOnStart = true;
+	[SerializeField] private bool stopBgmOnGameEnd = true;
+
 	[Header("Result UI")]
 	[SerializeField] private GameObject gameOverPanel;
 	[SerializeField] private TMP_Text resultText;
@@ -27,11 +35,21 @@ public class GameManager : MonoBehaviour
 		}
 
 		Instance = this;
+
+		if (bgmAudioSource == null)
+		{
+			bgmAudioSource = GetComponent<AudioSource>();
+		}
 	}
 
 	private void Start()
 	{
 		StartGame();
+	}
+
+	private void Update()
+	{
+		RotateCdIcon();
 	}
 
 	public void StartGame()
@@ -44,7 +62,69 @@ public class GameManager : MonoBehaviour
 		}
 
 		Time.timeScale = 1f;
+
+		if (playBgmOnStart)
+		{
+			PlayBgm();
+		}
 	}
+
+	private void PlayBgm()
+	{
+		if (bgmAudioSource == null)
+		{
+			Debug.LogWarning("BGM AudioSource가 연결되어 있지 않습니다.");
+			return;
+		}
+
+		if (bgmClip != null)
+		{
+			bgmAudioSource.clip = bgmClip;
+		}
+
+		if (bgmAudioSource.clip == null)
+		{
+			Debug.LogWarning("BGM AudioClip이 없습니다.");
+			return;
+		}
+
+		bgmAudioSource.loop = true;
+
+		if (!bgmAudioSource.isPlaying)
+		{
+			bgmAudioSource.Play();
+		}
+	}
+
+	private void StopBgm()
+	{
+		if (bgmAudioSource == null)
+		{
+			return;
+		}
+
+		bgmAudioSource.Stop();
+	}
+
+	private void RotateCdIcon()
+	{
+		if (cdIcon == null)
+		{
+			return;
+		}
+
+		if (bgmAudioSource == null || !bgmAudioSource.isPlaying)
+		{
+			return;
+		}
+
+		cdIcon.Rotate(
+			0f,
+			0f,
+			-cdRotateSpeed * Time.unscaledDeltaTime
+		);
+	}
+
 
 	public void GameOver()
 	{
@@ -56,6 +136,11 @@ public class GameManager : MonoBehaviour
 		currentState = GameState.GameOver;
 
 		ShowResultPanel("Game Over");
+
+		if (stopBgmOnGameEnd)
+		{
+			StopBgm();
+		}
 
 		Time.timeScale = 0f;
 	}
