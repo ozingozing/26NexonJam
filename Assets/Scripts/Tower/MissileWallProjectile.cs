@@ -15,7 +15,11 @@ public class MissileWallProjectile : ProjectileBase
     [Header("Effects")]
     [SerializeField] private GameObject explosionEffect;
 
-    private Vector3 lastTargetPosition;
+	[Header("Sound")]
+	[SerializeField] private AudioClip explosionSound;
+	[SerializeField] private float explosionSoundVolume = 1f;
+
+	private Vector3 lastTargetPosition;
     private bool hasExploded;
 
     public override void Init(Unit newTarget, LayerMask newEnemyMask)
@@ -99,7 +103,15 @@ public class MissileWallProjectile : ProjectileBase
             Instantiate(explosionEffect, explodePosition, Quaternion.identity);
         }
 
-        Destroy(gameObject);
+		if (AudioManager.Instance != null)
+		{
+			AudioManager.Instance.PlaySfx(
+				explosionSound,
+                explosionSoundVolume
+			);
+		}
+
+		Destroy(gameObject);
     }
 
     private void ApplySplashDamage(Vector3 center)

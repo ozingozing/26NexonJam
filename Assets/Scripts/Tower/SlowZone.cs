@@ -1,78 +1,135 @@
 using UnityEngine;
 using System.Collections;
-using TMPro;
 
 public class SlowZone : MonoBehaviour
 {
-    [Header("Slow Zone")]
-    [SerializeField] private float radius = 4f;
-    [SerializeField] private float duration = 4f;
-    [SerializeField] private float slowRate = 0.4f;
+	[Header("Slow Zone")]
+	[SerializeField] private float radius = 4f;
+	[SerializeField] private float duration = 4f;
+	[SerializeField] private float slowRate = 0.4f;
 
-    [Header("Detect")]
-    [SerializeField] private LayerMask enemyMask;
-    [SerializeField] private float tickInterval = 0.2f;
+	[Header("Detect")]
+	[SerializeField] private LayerMask enemyMask;
+	[SerializeField] private float tickInterval = 0.2f;
 
-    [SerializeField] private GameObject hitEffect;
-    private GameObject currentEffect;
+	[Header("Sound")]
+	[SerializeField] private AudioClip loopSound;
+	[SerializeField] private float loopSoundVolume = 0.7f;
 
-    private void Start()
-    {
-        StartCoroutine(SlowRoutine());
+	[SerializeField] private GameObject hitEffect;
 
-        if (hitEffect != null)
-        {
-            currentEffect = Instantiate(hitEffect, transform.position + Vector3.up, Quaternion.identity);
-        }
-        Destroy(gameObject, duration);
-    }
+	private AudioSource loopAudioSource;
+	private GameObject currentEffect;
 
-    private void OnDestroy()
-    {
-        if (currentEffect != null)
-            Destroy(currentEffect);
-    }
+	private void Start()
+	{
+		PlayLoopSound();
 
-    public void Init(LayerMask newEnemyMask)
-    {
-        enemyMask = newEnemyMask;
-    }
+		if (hitEffect != null)
+		{
+			currentEffect = Instantiate(
+				hitEffect,
+				transform.position + Vector3.up,
+				Quaternion.identity
+			);
+		}
 
-    private IEnumerator SlowRoutine()
-    {
-        while (true)
-        {
-            ApplySlowToEnemies();
-            yield return new WaitForSeconds(tickInterval);
-        }
-    }
+		StartCoroutine(SlowRoutine());
+		StartCoroutine(LifeRoutine());
+	}
 
-    private void ApplySlowToEnemies()
-    {
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position,
-            radius,
-            enemyMask
-        );
+	private void OnDestroy()
+	{
+		if (currentEffect != null)
+		{
+			Destroy(currentEffect);
+		}
 
-        for (int i = 0; i < hits.Length; i++)
-        {
-            Unit unit = hits[i].GetComponent<Unit>();
+		StopLoopSound();
+	}
 
-            if (unit == null)
-            {
-                continue;
-            }
+	public void Init(LayerMask newEnemyMask)
+	{
+		enemyMask = newEnemyMask;
+	}
 
-            Debug.Log("asdasd");
-            // 장판 안에 있는 동안 계속 슬로우를 갱신
-            unit.ApplySlow(slowRate, tickInterval + 0.1f);
-        }
-    }
+	private IEnumerator LifeRoutine()
+	{
+		yield return new WaitForSeconds(duration);
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, radius);
-    }
+		Destroy(gameObject);
+	}
+
+	private IEnumerator SlowRoutine()
+	{
+		while (true)
+		{
+			if (GameManager.Instance != null && GameManager.Instance.IsGameEnded)
+			{
+				yield break;
+			}
+
+			ApplySlowToEnemies();
+			yield return new WaitForSeconds(tickInterval);
+		}
+	}
+
+	private void ApplySlowToEnemies()
+	{
+		Collider[] hits = Physics.OverlapSphere(
+			transform.position,
+			radius,
+			enemyMask
+		);
+
+		for (int i = 0; i < hits.Length; i++)
+		{
+			Unit unit = hits[i].GetComponent<Unit>();
+
+			if (unit == null)
+			{
+				continue;
+			}
+
+			unit.ApplySlow(slowRate, tickInterval + 0.1f);
+		}
+	}
+
+	private void PlayLoopSound()
+	{
+		if (AudioManager.Instance == null)
+		{
+			return;
+		}
+
+		loopAudioSource = AudioManager.Instance.PlayLoopSfx(
+			loopSound,
+			loopSoundVolume
+		);
+	}
+
+	private void StopLoopSound()
+	{
+		if (loopAudioSource == null)
+		{
+			return;
+		}
+
+		if (AudioManager.Instance != null)
+		{
+			AudioManager.Instance.StopLoopSfx(loopAudioSource);
+		}
+		else
+		{
+			Destroy(loopAudioSource.gameObject);
+		}
+
+		loopAudioSource = null;
+	}
+
+	private void OnDrawGizmosSelected()
+	{
+		Gizmos.color = Color.cyan;
+		Gizmos.DrawWireSphere(transform.position, radius);
+	}
 }

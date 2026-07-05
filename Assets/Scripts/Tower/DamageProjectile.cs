@@ -11,7 +11,12 @@ public class DamageProjectile : ProjectileBase
     [Header("Optional")]
     [SerializeField] private GameObject hitEffect;
 
-    private void Update()
+
+	[Header("Sound")]
+	[SerializeField] private AudioClip hitSound;
+	[SerializeField] private float hitSoundVolume = 1f;
+
+	private void Update()
     {
         if (target == null)
         {
@@ -66,6 +71,14 @@ public class DamageProjectile : ProjectileBase
             Instantiate(hitEffect, transform.position, Quaternion.identity);
         }
 
-        Destroy(gameObject);
+		if (AudioManager.Instance != null)
+		{
+			AudioManager.Instance.PlaySfx(
+				hitSound,
+				hitSoundVolume
+			);
+		}
+
+		Destroy(gameObject);
     }
 }

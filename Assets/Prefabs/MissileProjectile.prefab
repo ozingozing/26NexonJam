@@ -126,3 +126,5 @@ MonoBehaviour:
   damage: 100
   splashRadius: 10
   explosionEffect: {fileID: 8194992990867289339, guid: 7e46ff71492f7b548bc1d9f0a4e8d34f, type: 3}
+  explosionSound: {fileID: 8300000, guid: c0d2042fb5bd23749bb1add8553982c2, type: 3}
+  explosionSoundVolume: 0.3

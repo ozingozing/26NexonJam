@@ -28,8 +28,10 @@ public class TowerSelectionUI : MonoBehaviour
     [SerializeField] private TMP_Text selectedTowerText;
 
     private TowerType? selectedTowerType = null;
+	private bool isSubscribed;
 
-    private void Start()
+
+	private void Start()
     {
         UpdateAllButtonUI();
         UpdateSelectedTowerUI(null);
@@ -40,26 +42,56 @@ public class TowerSelectionUI : MonoBehaviour
 			UpdateGoldUI(PlayerGold.Instance.CurrentGold);
 			UpdateTowerButtonInteractable(PlayerGold.Instance.CurrentGold);
 		}
+		TrySubscribeGold();
 	}
 
 	private void OnEnable()
 	{
-		if (PlayerGold.Instance != null)
-		{
-			PlayerGold.Instance.OnGoldChanged += UpdateGoldUI;
-		}
+		TrySubscribeGold();
 	}
 
 	private void OnDisable()
 	{
+		UnsubscribeGold();
+	}
+
+	private void TrySubscribeGold()
+	{
+		if (isSubscribed)
+		{
+			return;
+		}
+
+		if (PlayerGold.Instance == null)
+		{
+			return;
+		}
+
+		PlayerGold.Instance.OnGoldChanged += UpdateGoldUI;
+		UpdateGoldUI(PlayerGold.Instance.CurrentGold);
+
+		isSubscribed = true;
+	}
+
+	private void UnsubscribeGold()
+	{
+		if (!isSubscribed)
+		{
+			return;
+		}
+
 		if (PlayerGold.Instance != null)
 		{
 			PlayerGold.Instance.OnGoldChanged -= UpdateGoldUI;
 		}
+
+		isSubscribed = false;
 	}
 
 	private void UpdateGoldUI(int gold)
 	{
+		Debug.Log($"Gold changed: {gold}");
+
 		if (goldText != null)
 		{
 			goldText.text = $"Gold: {gold}";

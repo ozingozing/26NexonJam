@@ -141,6 +141,10 @@ public class GameManager : MonoBehaviour
 		{
 			StopBgm();
 		}
+		if (AudioManager.Instance != null)
+		{
+			AudioManager.Instance.StopAllSounds();
+		}
 
 		Time.timeScale = 0f;
 	}
@@ -155,6 +159,15 @@ public class GameManager : MonoBehaviour
 		currentState = GameState.Clear;
 
 		ShowResultPanel("Clear!");
+
+		if (stopBgmOnGameEnd)
+		{
+			StopBgm();
+		}
+		if (AudioManager.Instance != null)
+		{
+			AudioManager.Instance.StopAllSounds();
+		}
 
 		Time.timeScale = 0f;
 	}

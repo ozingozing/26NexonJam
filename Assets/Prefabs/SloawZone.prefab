@@ -125,4 +125,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   tickInterval: 0.2
+  loopSound: {fileID: 8300000, guid: 9756be79425a0504280fa63eaf477fb6, type: 3}
+  loopSoundVolume: 0.3
   hitEffect: {fileID: 5112403345868107898, guid: e2716f58790ced2449e0ebaf5c71a7a4, type: 3}

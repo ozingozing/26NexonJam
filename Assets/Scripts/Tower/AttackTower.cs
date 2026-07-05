@@ -6,7 +6,11 @@ public class AttackTower : MonoBehaviour
     [SerializeField] private float attackRange = 8f;
     [SerializeField] private float attackInterval = 1f;
 
-    [Header("Projectile")]
+	[Header("Sound")]
+	[SerializeField] private AudioClip fireSound;
+	[SerializeField] private float fireSoundVolume = 1f;
+
+	[Header("Projectile")]
     [SerializeField] private ProjectileBase projectilePrefab;
     [SerializeField] private Transform firePoint;
 
@@ -132,7 +136,15 @@ public class AttackTower : MonoBehaviour
         );
 
         projectile.Init(currentTarget, enemyMask);
-    }
+
+		if (AudioManager.Instance != null)
+		{
+			AudioManager.Instance.PlaySfx(
+				fireSound,
+				fireSoundVolume
+			);
+		}
+	}
 
     private void OnDrawGizmosSelected()
     {

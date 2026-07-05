@@ -130,6 +130,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRange: 10
   attackInterval: 1
+  fireSound: {fileID: 8300000, guid: e26802a23e76a8848bef2c0d5bc4cf68, type: 3}
+  fireSoundVolume: 0.4
   projectilePrefab: {fileID: 4861761120527499085, guid: a5e1a8e0215fb574994267960ad0abfa, type: 3}
   firePoint: {fileID: 1060259622704487668}
   enemyMask:

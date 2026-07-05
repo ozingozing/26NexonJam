@@ -45,10 +45,21 @@ public class PathRequestManager : MonoBehaviour
                 //UnityEngine.Debug.Log("Path found: " + result.elapsedMilliseconds + " ms");
             }
 
-            // 콜백은 메인 스레드에서 실행됩니다.
-            result.callback(result.path, result.success);
+			// 콜백은 메인 스레드에서 실행됩니다.
+			try
+			{
+				result.callback?.Invoke(result.path, result.success);
+			}
+			catch (MissingReferenceException e)
+			{
+				Debug.LogWarning($"[PathRequestManager] Destroy된 오브젝트의 콜백 무시: {e.Message}");
+			}
+			catch (Exception e)
+			{
+				Debug.LogError($"[PathRequestManager] Path callback error: {e}");
+			}
 
-            isProcessingPath = false;
+			isProcessingPath = false;
             TryProcessNext();
         }
     }
