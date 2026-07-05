@@ -120,8 +120,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitType: 1
-  speed: 20
-  maxHp: 10
-  rotateSpeed: 10
+  speed: 30
+  maxHp: 50
+  baseDamage: 2
+  goldReward: 20
+  rotateSpeed: 20
   target: {fileID: 0}
-  modelForwardOffsetY: -90

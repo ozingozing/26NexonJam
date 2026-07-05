@@ -12,8 +12,10 @@ public class TowerSelectionUI : MonoBehaviour
         public TMP_Text buttonText;
         public Image buttonIcon;
     }
+	[Header("Gold UI")]
+	[SerializeField] private TMP_Text goldText;
 
-    [Header("References")]
+	[Header("References")]
     [SerializeField] private TowerBuilder towerBuilder;
 
     [Header("Tower Data")]
@@ -32,9 +34,57 @@ public class TowerSelectionUI : MonoBehaviour
         UpdateAllButtonUI();
         UpdateSelectedTowerUI(null);
         BindButtonEvents();
-    }
 
-    private void BindButtonEvents()
+		if (PlayerGold.Instance != null)
+		{
+			UpdateGoldUI(PlayerGold.Instance.CurrentGold);
+			UpdateTowerButtonInteractable(PlayerGold.Instance.CurrentGold);
+		}
+	}
+
+	private void OnEnable()
+	{
+		if (PlayerGold.Instance != null)
+		{
+			PlayerGold.Instance.OnGoldChanged += UpdateGoldUI;
+		}
+	}
+
+	private void OnDisable()
+	{
+		if (PlayerGold.Instance != null)
+		{
+			PlayerGold.Instance.OnGoldChanged -= UpdateGoldUI;
+		}
+	}
+
+	private void UpdateGoldUI(int gold)
+	{
+		if (goldText != null)
+		{
+			goldText.text = $"Gold: {gold}";
+		}
+
+		UpdateTowerButtonInteractable(gold);
+	}
+
+	private void UpdateTowerButtonInteractable(int currentGold)
+	{
+		for (int i = 0; i < towerButtons.Length; i++)
+		{
+			TowerButtonUI buttonUI = towerButtons[i];
+			TowerData towerData = GetTowerData(buttonUI.towerType);
+
+			if (towerData == null || buttonUI.button == null)
+			{
+				continue;
+			}
+
+			buttonUI.button.interactable = currentGold >= towerData.cost;
+		}
+	}
+
+	private void BindButtonEvents()
     {
         for (int i = 0; i < towerButtons.Length; i++)
         {

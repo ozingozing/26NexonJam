@@ -122,6 +122,7 @@ MonoBehaviour:
   unitType: 0
   speed: 20
   maxHp: 10
-  rotateSpeed: 10
+  baseDamage: 1
+  goldReward: 10
+  rotateSpeed: 20
   target: {fileID: 0}
-  modelForwardOffsetY: -90

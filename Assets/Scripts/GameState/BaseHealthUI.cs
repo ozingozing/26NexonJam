@@ -8,7 +8,6 @@ public class BaseHealthUI : MonoBehaviour
 	[SerializeField] private BaseHealth baseHealth;
 
 	[Header("UI")]
-	[SerializeField] private TMP_Text hpText;
 	[SerializeField] private Image hpFillImage;
 
 	[Header("Animation")]
@@ -69,11 +68,6 @@ public class BaseHealthUI : MonoBehaviour
 
 	private void UpdateHealthUI(int currentHp, int maxHp)
 	{
-		if (hpText != null)
-		{
-			hpText.text = $"Nexus HP: {currentHp} / {maxHp}";
-		}
-
 		targetFillAmount = (float)currentHp / maxHp;
 	}
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,11 +9,14 @@ public class GameManager : MonoBehaviour
 	[Header("Game State")]
 	public GameState currentState = GameState.Ready;
 
-	[Header("Optional UI")]
+	[Header("Result UI")]
 	[SerializeField] private GameObject gameOverPanel;
+	[SerializeField] private TMP_Text resultText;
 
 	public bool IsGameOver => currentState == GameState.GameOver;
+	public bool IsClear => currentState == GameState.Clear;
 	public bool IsPlaying => currentState == GameState.Playing;
+	public bool IsGameEnded => currentState == GameState.GameOver || currentState == GameState.Clear;
 
 	private void Awake()
 	{
@@ -44,22 +48,45 @@ public class GameManager : MonoBehaviour
 
 	public void GameOver()
 	{
-		if (currentState == GameState.GameOver)
+		if (IsGameEnded)
 		{
 			return;
 		}
 
 		currentState = GameState.GameOver;
 
-		Debug.Log("Game Over");
+		ShowResultPanel("Game Over");
+
+		Time.timeScale = 0f;
+	}
+
+	public void GameClear()
+	{
+		if (IsGameEnded)
+		{
+			return;
+		}
+
+		currentState = GameState.Clear;
+
+		ShowResultPanel("Clear!");
+
+		Time.timeScale = 0f;
+	}
+
+	private void ShowResultPanel(string message)
+	{
+		Debug.Log(message);
 
 		if (gameOverPanel != null)
 		{
 			gameOverPanel.SetActive(true);
 		}
 
-		// 게임을 완전히 멈추고 싶으면 사용
-		Time.timeScale = 0f;
+		if (resultText != null)
+		{
+			resultText.text = message;
+		}
 	}
 
 	public void RestartGame()

@@ -120,9 +120,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c301ade9262b1134a86ae78c115c3a16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 50
+  moveSpeed: 80
   rotateSpeed: 20
   hitDistance: 1.5
-  damage: 30
-  splashRadius: 5
+  damage: 100
+  splashRadius: 10
   explosionEffect: {fileID: 8194992990867289339, guid: 7e46ff71492f7b548bc1d9f0a4e8d34f, type: 3}

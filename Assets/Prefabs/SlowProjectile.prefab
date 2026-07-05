@@ -120,8 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b40bad81a5ea345b1952821645ab1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 50
+  moveSpeed: 80
   rotateSpeed: 20
   hitDistance: 0.3
   slowZonePrefab: {fileID: 8709804465449251264, guid: 8990623746c29564cad02352ae291997, type: 3}
-  hitEffect: {fileID: 5112403345868107898, guid: e2716f58790ced2449e0ebaf5c71a7a4, type: 3}

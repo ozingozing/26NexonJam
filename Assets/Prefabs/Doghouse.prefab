@@ -120,8 +120,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ce08e1697a29ca4c985f117d50aa983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 8
-  attackInterval: 1
+  attackRange: 10
+  attackInterval: 0.3
   projectilePrefab: {fileID: 467813692282662156, guid: 243c970744b4b5b4c925a7767aa80dc1, type: 3}
   firePoint: {fileID: 5830228447706101354}
   enemyMask:

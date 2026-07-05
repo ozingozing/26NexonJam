@@ -72,6 +72,7 @@ public class TowerBuilder : MonoBehaviour
             return;
         }
 
+
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -87,11 +88,22 @@ public class TowerBuilder : MonoBehaviour
             Debug.Log("이 위치에는 포탑을 설치할 수 없습니다.");
             return;
         }
+		if (PlayerGold.Instance == null)
+		{
+			Debug.LogWarning("PlayerGold가 씬에 없습니다.");
+			return;
+		}
 
-        Vector3 buildPosition = grid.GetBuildPosition(hitPoint);
+		if (!PlayerGold.Instance.CanSpend(selectedTower.cost))
+		{
+			Debug.Log("골드가 부족합니다.");
+			return;
+		}
+
+		Vector3 buildPosition = grid.GetBuildPosition(hitPoint);
         buildPosition.y += towerYOffset;
 
-        GameObject buildObject = 
+		GameObject buildObject = 
             Instantiate(selectedTower.towerPrefab,
                         buildPosition + Vector3.down,
                         Quaternion.identity);
@@ -106,5 +118,7 @@ public class TowerBuilder : MonoBehaviour
         {
             grid.SetTowerOnNode(hitPoint, true);
         }
-    }
+
+		PlayerGold.Instance.TrySpendGold(selectedTower.cost);
+	}
 }

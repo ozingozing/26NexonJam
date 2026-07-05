@@ -15,8 +15,10 @@ public class Unit : MonoBehaviour
 	[SerializeField] private int baseDamage = 1;
 	private float currentSpeed;
     private Coroutine slowCoroutine;
+	[Header("Reward")]
+	[SerializeField] private int goldReward = 10;
 
-    [Header("Rotation")]
+	[Header("Rotation")]
     [SerializeField] private float rotateSpeed = 10f;
 
     [Header("Path Target")]
@@ -77,7 +79,7 @@ public class Unit : MonoBehaviour
 
     public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
     {
-        if (!pathSuccessful || newPath == null || newPath.Length == 0)
+        if (!gameObject.activeSelf ||!pathSuccessful || newPath == null || newPath.Length == 0)
         {
             if (followPathCoroutine != null)
             {
@@ -174,8 +176,17 @@ public class Unit : MonoBehaviour
     }
 
     private void Die()
-    {
-        RemoveUnit();
+	{
+		if (removed)
+		{
+			return;
+		}
+
+		if (PlayerGold.Instance != null)
+		{
+			PlayerGold.Instance.AddGold(goldReward);
+		}
+		RemoveUnit();
     }
 
     private void RemoveUnit()
