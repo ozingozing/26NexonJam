@@ -12,7 +12,8 @@ public class Unit : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private float speed = 20f;
     [SerializeField] private int maxHp = 10;
-    private float currentSpeed;
+	[SerializeField] private int baseDamage = 1;
+	private float currentSpeed;
     private Coroutine slowCoroutine;
 
     [Header("Rotation")]
@@ -152,7 +153,14 @@ public class Unit : MonoBehaviour
 
     private void OnReachGoal()
     {
-        RemoveUnit();
+		BaseHealth baseHealth = target.GetComponent<BaseHealth>();
+
+		if (baseHealth != null)
+		{
+			baseHealth.TakeDamage(baseDamage);
+		}
+
+		RemoveUnit();
     }
 
     public void TakeDamage(int damage)

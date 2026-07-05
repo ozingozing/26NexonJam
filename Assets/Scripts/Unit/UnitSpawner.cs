@@ -77,7 +77,10 @@ public class UnitSpawner : MonoBehaviour
             SpawnUnitData spawnData = waveUnits[i];
 
             for (int j = 0; j < spawnData.count; j++)
+            {if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
             {
+                yield break;
+            }
                 SpawnUnit(spawnData);
                 yield return new WaitForSeconds(spawnData.spawnInterval);
             }
@@ -86,7 +89,12 @@ public class UnitSpawner : MonoBehaviour
 
     private void SpawnUnit(SpawnUnitData spawnData)
     {
-        if (spawnData.unitPrefab == null)
+		if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
+		{
+			return;
+		}
+
+		if (spawnData.unitPrefab == null)
         {
             Debug.LogWarning($"{spawnData.unitType} 타입의 unitPrefab이 비어 있습니다.");
             return;

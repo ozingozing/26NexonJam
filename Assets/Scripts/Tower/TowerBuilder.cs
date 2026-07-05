@@ -50,8 +50,13 @@ public class TowerBuilder : MonoBehaviour
 
     private void TryBuildTower()
     {
-        // UI 버튼을 클릭했을 때 맵에도 타워가 설치되는 문제 방지
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+		if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
+		{
+			return;
+		}
+
+		// UI 버튼을 클릭했을 때 맵에도 타워가 설치되는 문제 방지
+		if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }
