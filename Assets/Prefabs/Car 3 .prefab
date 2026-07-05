@@ -124,5 +124,5 @@ MonoBehaviour:
   maxHp: 100
   baseDamage: 3
   goldReward: 30
-  rotateSpeed: 20
+  rotateSpeed: 10
   target: {fileID: 0}

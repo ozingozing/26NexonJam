@@ -23,6 +23,15 @@ public class Unit : MonoBehaviour
 	[Header("Path Target")]
 	public Transform target;
 
+	[Header("Path Follow")]
+	private float waypointReachDistance = 0.1f;
+
+	// 새 Path를 받을 때 현재 위치와 매우 가까운 첫 waypoint만 건너뛰기 위한 거리
+	private float skipFirstWaypointDistance = 5f;
+
+	// 새 Path를 받을 때 최대 몇 개까지만 건너뛸지 제한
+	private int maxInitialSkipCount = 10;
+
 	private int currentHp;
 	private float currentSpeed;
 
@@ -96,8 +105,6 @@ public class Unit : MonoBehaviour
 			target.position,
 			(newPath, pathSuccessful) =>
 			{
-				// 이 콜백은 경로 계산이 끝난 뒤 나중에 호출됩니다.
-				// 그 사이 Unit이 Destroy되었을 수 있으므로 반드시 체크해야 합니다.
 				if (unit == null)
 				{
 					return;
@@ -123,11 +130,16 @@ public class Unit : MonoBehaviour
 
 		if (!pathSuccessful || newPath == null || newPath.Length == 0)
 		{
+			// 새 경로 계산 실패 시 기존 경로를 유지합니다.
 			return;
 		}
 
 		path = newPath;
-		targetIndex = 0;
+
+		// 중요:
+		// 새 Path를 받을 때 무조건 0번 waypoint부터 보지 않고,
+		// 이전 진행 방향을 기준으로 자연스러운 시작 waypoint를 찾습니다.
+		targetIndex = GetBestStartIndex(path);
 
 		if (followPathCoroutine != null)
 		{
@@ -146,7 +158,9 @@ public class Unit : MonoBehaviour
 			yield break;
 		}
 
-		Vector3 currentWaypoint = path[0];
+		targetIndex = Mathf.Clamp(targetIndex, 0, path.Length - 1);
+
+		Vector3 currentWaypoint = path[targetIndex];
 
 		while (true)
 		{
@@ -162,7 +176,7 @@ public class Unit : MonoBehaviour
 				yield break;
 			}
 
-			if (Vector3.Distance(transform.position, currentWaypoint) < 0.05f)
+			if (GetXZDistance(transform.position, currentWaypoint) < waypointReachDistance)
 			{
 				targetIndex++;
 
@@ -178,6 +192,8 @@ public class Unit : MonoBehaviour
 
 			LookAtWaypoint(currentWaypoint);
 
+			Vector3 beforePosition = transform.position;
+
 			transform.position = Vector3.MoveTowards(
 				transform.position,
 				currentWaypoint,
@@ -186,6 +202,45 @@ public class Unit : MonoBehaviour
 
 			yield return null;
 		}
+	}
+
+	private int GetBestStartIndex(Vector3[] newPath)
+	{
+		if (newPath == null || newPath.Length == 0)
+		{
+			return 0;
+		}
+
+		int startIndex = 0;
+
+		// 중요:
+		// 절대 전체 path를 대상으로 "뒤쪽 노드"를 계속 스킵하면 안 됩니다.
+		// 벽을 피하기 위해 잠깐 뒤로 가야 하는 경로도 있기 때문입니다.
+		//
+		// 그래서 현재 위치와 아주 가까운 초반 waypoint만 제한적으로 스킵합니다.
+		int maxSkipIndex = Mathf.Min(maxInitialSkipCount, newPath.Length - 1);
+
+		while (startIndex < maxSkipIndex)
+		{
+			float distance = GetXZDistance(transform.position, newPath[startIndex]);
+
+			if (distance > skipFirstWaypointDistance)
+			{
+				break;
+			}
+
+			startIndex++;
+		}
+
+		return Mathf.Clamp(startIndex, 0, newPath.Length - 1);
+	}
+
+	private float GetXZDistance(Vector3 a, Vector3 b)
+	{
+		a.y = 0f;
+		b.y = 0f;
+
+		return Vector3.Distance(a, b);
 	}
 
 	private void LookAtWaypoint(Vector3 waypoint)
